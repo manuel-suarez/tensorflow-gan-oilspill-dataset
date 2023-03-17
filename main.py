@@ -67,7 +67,7 @@ def make_generator_model():
 
 generator = make_generator_model()
 generator.summary()
-    
+
 noise = tf.random.normal([1, 1000])
 generated_image = generator(noise, training=False)
 
@@ -123,7 +123,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator=discriminator)
 
 # Training
-EPOCHS = 300
+EPOCHS = 1000
 noise_dim = 1000
 num_examples_to_generate = 16
 
