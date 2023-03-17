@@ -33,7 +33,7 @@ for images in train_dataset.take(1):
         ax = plt.subplot(3, 3, i + 1)
         plt.imshow(images[i].numpy().astype("uint8"), cmap='gray')
         plt.axis("off")
-plt.show()
+plt.savefig('figura1.png')
 
 # Generator
 def make_generator_model():
@@ -123,7 +123,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator=discriminator)
 
 # Training
-EPOCHS = 50
+EPOCHS = 300
 noise_dim = 1000
 num_examples_to_generate = 16
 
