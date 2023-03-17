@@ -17,8 +17,8 @@ IMG_HEIGHT = 648 # 1248->624->312->156
 IMG_WIDTH = 1248 #  648->324->162-> 81
 
 # Data loading
-datadir = "C:\\Users\\masua\\Downloads\\Cimat\\oil-spill-dataset\\images"
-# datadir = "/home/est_posgrado_manuel.suarez/data/oil-spill-dataset-gan/images"
+# datadir = "C:\\Users\\masua\\Downloads\\Cimat\\oil-spill-dataset\\images"
+datadir = "/home/est_posgrado_manuel.suarez/data/oil-spill-dataset-gan/images"
 train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
     datadir,
     label_mode=None,
