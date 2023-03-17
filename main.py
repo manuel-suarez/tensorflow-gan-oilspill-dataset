@@ -13,12 +13,12 @@ import time
 from IPython import display
 
 BATCH_SIZE = 32
-IMG_HEIGHT = 648 # 1248->624->312->156
-IMG_WIDTH = 1248 #  648->324->162-> 81
+IMG_HEIGHT = 640 #  640->320->160-> 80->40->20
+IMG_WIDTH = 1248 # 1248->624->312->156->78->39
 
 # Data loading
-# datadir = "C:\\Users\\masua\\Downloads\\Cimat\\oil-spill-dataset\\images"
-datadir = "/home/est_posgrado_manuel.suarez/data/oil-spill-dataset-gan/images"
+datadir = "C:\\Users\\masua\\Downloads\\Cimat\\oil-spill-dataset\\images"
+# datadir = "/home/est_posgrado_manuel.suarez/data/oil-spill-dataset-gan/images"
 train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
     datadir,
     label_mode=None,
@@ -38,30 +38,41 @@ plt.savefig('figura1.png')
 # Generator
 def make_generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(81*156*32, use_bias=False, input_shape=(1000,)))
+    model.add(layers.Dense(20*39*64, use_bias=False, input_shape=(1000,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape((81, 156, 32)))
-    assert model.output_shape == (None, 81, 156, 32)
+    model.add(layers.Reshape((20, 39, 64)))
+    assert model.output_shape == (None, 20, 39, 64)
 
-    model.add(layers.Conv2DTranspose(16, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 81, 156, 16)
+    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 20, 39, 64)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    print(model.output_shape)
+    assert model.output_shape == (None, 40, 78, 32)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(16, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 80, 156, 16)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(8, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 162, 312, 8)
+    assert model.output_shape == (None, 160, 312, 8)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(4, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 324, 624, 4)
+    assert model.output_shape == (None, 320, 624, 4)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-    assert model.output_shape == (None, 648, 1248, 1)
+    assert model.output_shape == (None, 640, 1248, 1)
 
     return model
 
@@ -76,7 +87,7 @@ plt.imshow(generated_image[0, :, :, 0], cmap='gray')
 def make_discriminator_model():
     model = tf.keras.Sequential()
 
-    model.add(layers.Conv2D(4, (5, 5), strides=(2, 2), padding='same', input_shape=[648, 1248, 1]))
+    model.add(layers.Conv2D(4, (5, 5), strides=(2, 2), padding='same', input_shape=[640, 1248, 1]))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
@@ -85,6 +96,14 @@ def make_discriminator_model():
     model.add(layers.Dropout(0.3))
 
     model.add(layers.Conv2D(16, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Conv2D(32, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same'))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
@@ -123,7 +142,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator=discriminator)
 
 # Training
-EPOCHS = 1000
+EPOCHS = 300
 noise_dim = 1000
 num_examples_to_generate = 16
 
