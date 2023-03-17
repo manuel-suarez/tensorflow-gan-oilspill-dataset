@@ -13,8 +13,8 @@ import time
 from IPython import display
 
 BATCH_SIZE = 32
-IMG_HEIGHT = 650
-IMG_WIDTH = 1250
+IMG_HEIGHT = 648
+IMG_WIDTH = 1248
 
 # Data loading
 datadir = "C:\\Users\\masua\\Downloads\\Cimat\\oil-spill-dataset\\images"
@@ -32,3 +32,14 @@ for images in train_dataset.take(1):
         plt.imshow(images[i].numpy().astype("uint8"))
         plt.axis("off")
 plt.show()
+
+# Generator
+def make_generator_model():
+    model = tf.keras.Sequential()
+    model.add(layers.Dense(IMG_HEIGHT*IMG_WIDTH*BATCH_SIZE, use_bias=False, input_shape=(10000)))
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Reshape(IMG_HEIGHT, IMG_WIDTH, BATCH_SIZE))
+    assert model.output_shape == (None, IMG_HEIGHT, IMG_WIDTH, BATCH_SIZE)
+    
