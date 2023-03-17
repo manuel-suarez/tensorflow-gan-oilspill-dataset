@@ -38,30 +38,30 @@ plt.show()
 # Generator
 def make_generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(156*81*32, use_bias=False, input_shape=(1000,)))
+    model.add(layers.Dense(81*156*32, use_bias=False, input_shape=(1000,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape((156, 81, 32)))
-    assert model.output_shape == (None, 156, 81, 32)
+    model.add(layers.Reshape((81, 156, 32)))
+    assert model.output_shape == (None, 81, 156, 32)
 
     model.add(layers.Conv2DTranspose(16, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 156, 81, 16)
+    assert model.output_shape == (None, 81, 156, 16)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(8, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 312, 162, 8)
+    assert model.output_shape == (None, 162, 312, 8)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(4, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 624, 324, 4)
+    assert model.output_shape == (None, 324, 624, 4)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-    assert model.output_shape == (None, 1248, 648, 1)
+    assert model.output_shape == (None, 648, 1248, 1)
 
     return model
 
@@ -76,7 +76,7 @@ plt.imshow(generated_image[0, :, :, 0], cmap='gray')
 def make_discriminator_model():
     model = tf.keras.Sequential()
 
-    model.add(layers.Conv2D(4, (5, 5), strides=(2, 2), padding='same', input_shape=[1248, 648, 1]))
+    model.add(layers.Conv2D(4, (5, 5), strides=(2, 2), padding='same', input_shape=[648, 1248, 1]))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
