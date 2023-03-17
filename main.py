@@ -25,3 +25,10 @@ train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
     image_size=(IMG_HEIGHT, IMG_WIDTH)
 )
 
+plt.figure(figsize=(10, 10))
+for images in train_dataset.take(1):
+    for i in range(9):
+        ax = plt.subplot(3, 3, i + 1)
+        plt.imshow(images[i].numpy().astype("uint8"))
+        plt.axis("off")
+plt.show()
