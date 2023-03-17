@@ -13,8 +13,8 @@ import time
 from IPython import display
 
 BATCH_SIZE = 32
-IMG_HEIGHT = 648
-IMG_WIDTH = 1248
+IMG_HEIGHT = 648 # 1248->624->312->156
+IMG_WIDTH = 1248 #  648->324->162-> 81
 
 # Data loading
 datadir = "C:\\Users\\masua\\Downloads\\Cimat\\oil-spill-dataset\\images"
@@ -36,10 +36,33 @@ plt.show()
 # Generator
 def make_generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(IMG_HEIGHT*IMG_WIDTH*BATCH_SIZE, use_bias=False, input_shape=(10000)))
+    model.add(layers.Dense(156*81*32, use_bias=False, input_shape=(1000,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape(IMG_HEIGHT, IMG_WIDTH, BATCH_SIZE))
-    assert model.output_shape == (None, IMG_HEIGHT, IMG_WIDTH, BATCH_SIZE)
+    model.add(layers.Reshape((156, 81, 32)))
+    assert model.output_shape == (None, 156, 81, 32)
+
+    model.add(layers.Conv2DTranspose(16, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 156, 81, 16)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(8, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 312, 162, 8)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(4, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 624, 324, 4)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+    assert model.output_shape == (None, 1248, 648, 1)
+
+    return model
+
+generator = make_generator_model()
+generator.summary()
     
