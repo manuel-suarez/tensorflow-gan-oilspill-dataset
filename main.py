@@ -42,7 +42,7 @@ def make_generator_model():
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape((20, 39, 64)))
+    model.add(layers.Reshape((20, 39, 128)))
     assert model.output_shape == (None, 20, 39, 128)
 
     model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
