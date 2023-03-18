@@ -38,36 +38,36 @@ plt.savefig('figura1.png')
 # Generator
 def make_generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(20*39*128, use_bias=False, input_shape=(10000,)))
+    model.add(layers.Dense(20*39*256, use_bias=False, input_shape=(1000,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape((20, 39, 128)))
-    assert model.output_shape == (None, 20, 39, 128)
+    model.add(layers.Reshape((20, 39, 256)))
+    assert model.output_shape == (None, 20, 39, 256)
 
-    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 20, 39, 128)
+    model.add(layers.Conv2DTranspose(256, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 20, 39, 256)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    print(model.output_shape)
+    assert model.output_shape == (None, 40, 78, 128)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    print(model.output_shape)
-    assert model.output_shape == (None, 40, 78, 64)
+    assert model.output_shape == (None, 80, 156, 64)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 80, 156, 32)
+    assert model.output_shape == (None, 160, 312, 32)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(16, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 160, 312, 16)
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
-
-    model.add(layers.Conv2DTranspose(8, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 320, 624, 8)
+    assert model.output_shape == (None, 320, 624, 16)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -79,7 +79,7 @@ def make_generator_model():
 generator = make_generator_model()
 generator.summary()
 
-noise = tf.random.normal([1, 10000])
+noise = tf.random.normal([1, 1000])
 generated_image = generator(noise, training=False)
 
 plt.imshow(generated_image[0, :, :, 0], cmap='gray')
@@ -87,11 +87,7 @@ plt.imshow(generated_image[0, :, :, 0], cmap='gray')
 def make_discriminator_model():
     model = tf.keras.Sequential()
 
-    model.add(layers.Conv2D(8, (5, 5), strides=(2, 2), padding='same', input_shape=[640, 1248, 1]))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
-
-    model.add(layers.Conv2D(16, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.Conv2D(16, (5, 5), strides=(2, 2), padding='same', input_shape=[640, 1248, 1]))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
@@ -104,6 +100,10 @@ def make_discriminator_model():
     model.add(layers.Dropout(0.3))
 
     model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same'))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
@@ -143,7 +143,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
 
 # Training
 EPOCHS = 300
-noise_dim = 10000
+noise_dim = 1000
 num_examples_to_generate = 16
 
 # You will reuse this seed overtime (so it's easier)
