@@ -38,7 +38,7 @@ plt.savefig('figura1.png')
 # Generator
 def make_generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(20*39*128, use_bias=False, input_shape=(1000,)))
+    model.add(layers.Dense(20*39*128, use_bias=False, input_shape=(10000,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -79,7 +79,7 @@ def make_generator_model():
 generator = make_generator_model()
 generator.summary()
 
-noise = tf.random.normal([1, 1000])
+noise = tf.random.normal([1, 10000])
 generated_image = generator(noise, training=False)
 
 plt.imshow(generated_image[0, :, :, 0], cmap='gray')
