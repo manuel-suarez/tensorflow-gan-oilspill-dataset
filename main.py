@@ -12,7 +12,7 @@ import time
 
 from IPython import display
 
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 IMG_HEIGHT = 640 #  640->320->160-> 80->40->20
 IMG_WIDTH = 1248 # 1248->624->312->156->78->39
 
