@@ -143,7 +143,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
 
 # Training
 EPOCHS = 300
-noise_dim = 1000
+noise_dim = 10000
 num_examples_to_generate = 16
 
 # You will reuse this seed overtime (so it's easier)
